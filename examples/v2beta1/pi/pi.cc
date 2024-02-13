@@ -15,6 +15,23 @@
 #include "mpi.h"
 #include <random>
 #include <cstdio>
+#include <chrono>
+#include <thread>
+
+int epilogue(int rank) {
+    int len;
+    char version[MPI_MAX_LIBRARY_VERSION_STRING];
+    MPI_Get_library_version(version, &len);
+
+    printf("epilogue: MPI_Get_library_version: version %s, %d\n", version, len);
+
+    int n = 1000;
+    for (int i = 0; i < n; i++) {
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        printf("[Rank %d] sleep\n", rank);
+    }
+    return 0;
+}
 
 int main(int argc, char *argv[]) {
   int rank, workers, proc_name_size;
@@ -46,6 +63,7 @@ int main(int argc, char *argv[]) {
     double pi = 4 * (double)total_count / (double)(worker_tests) / (double)(workers);
     printf("pi is approximately %.16lf\n", pi);
   }
+  epilogue(rank);
   MPI_Finalize();
   return 0;
 }

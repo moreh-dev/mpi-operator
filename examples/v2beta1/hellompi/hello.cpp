@@ -5,10 +5,6 @@
 #include <thread>
 
 int epilogue(int rank) {
-  int len;
-  char version[MPI_MAX_LIBRARY_VERSION_STRING];
-  MPI_Get_library_version(version, &len);
-
   int n = 1000;
   for (int i = 0; i < n; i++) {
     std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -18,12 +14,18 @@ int epilogue(int rank) {
 }
 
 int main(int argc, char *argv[]) {
+  int len;
+  char version[MPI_MAX_LIBRARY_VERSION_STRING];
+  MPI_Get_library_version(version, &len);
+
+  printf("MPI_Get_library_version: %s\n", version);
+
   int rank, workers, proc_name_size;
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &workers);
   if (rank == 0) {
-    printf("Workers: %d\n", workers);
+    printf("RANK 0: num worker is %d\n", workers);
   }
   char hostname[MPI_MAX_PROCESSOR_NAME];
   MPI_Get_processor_name(hostname, &proc_name_size);
